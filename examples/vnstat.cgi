@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 
 # vnstat.cgi -- example cgi for vnStat image output
-# copyright (c) 2008-2024 Teemu Toivola <tst at iki dot fi>
+# copyright (c) 2008-2026 Teemu Toivola <tst at iki dot fi>
 #
 # based on mailgraph.cgi
 # copyright (c) 2000-2007 ETH Zurich
@@ -57,6 +57,9 @@ my $indeximagesperrow = '1';
 # image output to use on the index page when more than one interface exists
 my $indeximageoutput = 'hs';
 
+# use configuration file defined list lengths instead of hardcoded values on single image pages, set 1 to enable
+my $usecfglengthonsingleimagepages = '0';
+
 # cgi script file name for httpd
 # fill to override automatic detection
 my $scriptname = '';
@@ -65,7 +68,7 @@ my $scriptname = '';
 ################ no user configurable settings below this line ################
 
 
-my $VERSION = "1.19";
+my $VERSION = "1.20";
 my $cssbody = "body { background-color: $bgcolor; text-align: left; display: block; }";
 my $csscommonstyle = "a { text-decoration: underline; }\ntable { border: 0px; border-spacing: 0px; display: inline; }\ntd { vertical-align: top; padding: 0px; }\nimg { border: 0px; vertical-align: top; margin: 4px 4px; }";
 my $csscolors = "a:link { color: #b0b0b0; }\na:visited { color: #b0b0b0; }\na:hover { color: #000000; }\nsmall { display: inline; font-size: 8px; color: #cbcbcb; padding: 0px 4px; }";
@@ -333,6 +336,7 @@ sub main
 	}
 
 	my $query = $ENV{QUERY_STRING};
+	my $listlength = '';
 	if (defined $query and $query =~ /\S/) {
 		if ($query =~ /^(\d+)-s$/) {
 			handle_image($interfaces[$1], "$tmp_dir/vnstat_$1.png", "-s");
@@ -359,28 +363,43 @@ sub main
 			handle_image($interfaces[$1], "$tmp_dir/vnstat_$1_d.png", "-d 30");
 		}
 		elsif ($query =~ /^(\d+)-d-l$/) {
-			handle_image($interfaces[$1], "$tmp_dir/vnstat_$1_d_l.png", "-d 60");
+			if ($usecfglengthonsingleimagepages == '0') {
+				$listlength = '60';
+			}
+			handle_image($interfaces[$1], "$tmp_dir/vnstat_$1_d_l.png", "-d $listlength");
 		}
 		elsif ($query =~ /^(\d+)-m$/) {
 			handle_image($interfaces[$1], "$tmp_dir/vnstat_$1_m.png", "-m 12");
 		}
 		elsif ($query =~ /^(\d+)-m-l$/) {
-			handle_image($interfaces[$1], "$tmp_dir/vnstat_$1_m_l.png", "-m 24");
+			if ($usecfglengthonsingleimagepages == '0') {
+				$listlength = '24';
+			}
+			handle_image($interfaces[$1], "$tmp_dir/vnstat_$1_m_l.png", "-m $listlength");
 		}
 		elsif ($query =~ /^(\d+)-t$/) {
 			handle_image($interfaces[$1], "$tmp_dir/vnstat_$1_t.png", "-t 10");
 		}
 		elsif ($query =~ /^(\d+)-t-l$/) {
-			handle_image($interfaces[$1], "$tmp_dir/vnstat_$1_t_l.png", "-t 20");
+			if ($usecfglengthonsingleimagepages == '0') {
+				$listlength = '20';
+			}
+			handle_image($interfaces[$1], "$tmp_dir/vnstat_$1_t_l.png", "-t $listlength");
 		}
 		elsif ($query =~ /^(\d+)-h$/) {
-			handle_image($interfaces[$1], "$tmp_dir/vnstat_$1_h.png", "-h 48");
+			if ($usecfglengthonsingleimagepages == '0') {
+				$listlength = '48';
+			}
+			handle_image($interfaces[$1], "$tmp_dir/vnstat_$1_h.png", "-h $listlength");
 		}
 		elsif ($query =~ /^(\d+)-hg$/) {
 			handle_image($interfaces[$1], "$tmp_dir/vnstat_$1_hg.png", "-hg");
 		}
 		elsif ($query =~ /^(\d+)-5$/) {
-			handle_image($interfaces[$1], "$tmp_dir/vnstat_$1_5.png", "-5 60");
+			if ($usecfglengthonsingleimagepages == '0') {
+				$listlength = '60';
+			}
+			handle_image($interfaces[$1], "$tmp_dir/vnstat_$1_5.png", "-5 $listlength");
 		}
 		elsif ($query =~ /^(\d+)-5g$/) {
 			if ($largefonts == '1') {
@@ -393,7 +412,10 @@ sub main
 			handle_image($interfaces[$1], "$tmp_dir/vnstat_$1_y.png", "-y 5");
 		}
 		elsif ($query =~ /^(\d+)-y-l$/) {
-			handle_image($interfaces[$1], "$tmp_dir/vnstat_$1_y_l.png", "-y 0");
+			if ($usecfglengthonsingleimagepages == '0') {
+				$listlength = '0';
+			}
+			handle_image($interfaces[$1], "$tmp_dir/vnstat_$1_y_l.png", "-y $listlength");
 		}
 		elsif ($query =~ /^(\d+)-95rx$/) {
 			handle_image($interfaces[$1], "$tmp_dir/vnstat_$1_95rx.png", "--95th 0");

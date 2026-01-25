@@ -9,6 +9,8 @@
      $XDG_CONFIG_HOME/vnstat/vnstat.conf and $HOME/.config/vnstat/vnstat.conf
      are tried before $HOME/.vnstatrc, /etc/vnstat.conf and
      /usr/local/etc/vnstat.conf
+   - Add option for selecting use of configuration file defined list lengths
+     instead of hardcoded values in single image pages (examples/vnstat.cgi)
 
 
 2.13 / 8-Feb-2025
