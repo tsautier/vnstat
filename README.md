@@ -26,7 +26,7 @@ Docker container containing the pre-compiled latest stable release.
   1. `wget https://humdi.net/vnstat/vnstat-latest.tar.gz`
   2. optional steps for verifying the file signature
      1. `wget https://humdi.net/vnstat/vnstat-latest.tar.gz.asc`
-     2. `gpg --keyserver pgp.mit.edu --recv-key 0xDAFE84E63D140114`
+     2. `gpg --keyserver keys.openpgp.org --recv-key 0xDAFE84E63D140114`
      3. `gpg --verify vnstat-latest.tar.gz.asc vnstat-latest.tar.gz`
      4. the signature is correct if the output shows "Good signature from Teemu Toivola"
   3. `tar zxvf vnstat-latest.tar.gz`
