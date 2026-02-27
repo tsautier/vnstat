@@ -155,7 +155,7 @@ and most can be changed later from the config file.
 #define LIVESPINNER 1
 
 /* maximum allowed config value for bandwidth */
-#define BWMAX 50000
+#define BWMAX 400000
 
 /* how many seconds should sampling take by default */
 #define DEFSAMPTIME 5
