@@ -11,6 +11,7 @@
      /usr/local/etc/vnstat.conf
    - Add option for selecting use of configuration file defined list lengths
      instead of hardcoded values in single image pages (examples/vnstat.cgi)
+   - Increased maximum supported MaxBandwidth value from 5000 to 400000
 
 
 2.13 / 8-Feb-2025
