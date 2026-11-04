@@ -1116,7 +1116,7 @@ START_TEST(image_common_target_width_builtin)
 }
 END_TEST
 
-#if HAVE_DECL_GDIMAGESTRINGFT
+#if HAVE_GD_FREETYPE
 START_TEST(image_common_target_width_ttf)
 {
 	IMAGECONTENT ic;
@@ -1164,7 +1164,7 @@ START_TEST(imagefontinit_fails_for_missing_fontfile)
 }
 END_TEST
 
-#if HAVE_DECL_GDIMAGESTRINGFT
+#if HAVE_GD_FREETYPE
 START_TEST(imagefontinit_ttf_success_and_metrics)
 {
 	IMAGECONTENT ic, ic_large, ic_big;
@@ -1826,7 +1826,7 @@ void add_image_tests(Suite *s)
 	tcase_add_test(tc_image, graph_geometry_helpers_builtin);
 	tcase_add_test(tc_image, image_common_target_width_builtin);
 	tcase_add_test(tc_image, imagefontinit_fails_for_missing_fontfile);
-#if HAVE_DECL_GDIMAGESTRINGFT
+#if HAVE_GD_FREETYPE
 	tcase_add_test(tc_image, imagefontinit_ttf_success_and_metrics);
 	tcase_add_test(tc_image, image_common_target_width_ttf);
 #else

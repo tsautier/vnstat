@@ -64,7 +64,7 @@ static int imageroleascent(const IMAGECONTENT *ic, const fontrole_t role)
 	}
 }
 
-#if HAVE_DECL_GDIMAGESTRINGFT
+#if HAVE_GD_FREETYPE
 static int fontcache_ready = 0;
 
 static char *imagettfbbox(const IMAGECONTENT *ic, const double ptsize, const double angle, const char *text, int *brect)
@@ -254,7 +254,7 @@ int imagefontinit(IMAGECONTENT *ic, const int largefonts)
 		return 1;
 	}
 
-#if HAVE_DECL_GDIMAGESTRINGFT
+#if HAVE_GD_FREETYPE
 	if (access(cfg.fontfile, R_OK) != 0) {
 		fprintf(stderr, "Error: Unable to read FontFile \"%s\": %s\n", cfg.fontfile, strerror(errno));
 		return 0;
@@ -279,14 +279,14 @@ int imagefontinit(IMAGECONTENT *ic, const int largefonts)
 
 	return 1;
 #else
-	fprintf(stderr, "Error: FontFile is set but libGD lacks FreeType/TTF support.\n");
+	fprintf(stderr, "Error: FontFile is set but this build has no FreeType/TTF support.\n");
 	return 0;
 #endif
 }
 
 void imagefontcleanup(void)
 {
-#if HAVE_DECL_GDIMAGESTRINGFT
+#if HAVE_GD_FREETYPE
 	if (fontcache_ready) {
 		gdFontCacheShutdown();
 		fontcache_ready = 0;
@@ -296,7 +296,7 @@ void imagefontcleanup(void)
 
 void imagestring(IMAGECONTENT *ic, const fontrole_t role, const int x, const int y, const char *text, const int color)
 {
-#if HAVE_DECL_GDIMAGESTRINGFT
+#if HAVE_GD_FREETYPE
 	int brect[8], baseline_y;
 	double ptsize;
 	const char *err;
@@ -311,7 +311,7 @@ void imagestring(IMAGECONTENT *ic, const fontrole_t role, const int x, const int
 		return;
 	}
 
-#if HAVE_DECL_GDIMAGESTRINGFT
+#if HAVE_GD_FREETYPE
 	ptsize = imageroleptsize(ic, role);
 	baseline_y = y + imageroleascent(ic, role);
 	err = gdImageStringFT(ic->im, brect, color, ic->fontctx.ttfpath, ptsize, 0.0, x, baseline_y, (char *)text);
@@ -404,7 +404,7 @@ void imagestring_value_right(IMAGECONTENT *ic, const fontrole_t role, const int 
 
 void imagestringup(IMAGECONTENT *ic, const fontrole_t role, const int x, const int y, const char *text, const int color)
 {
-#if HAVE_DECL_GDIMAGESTRINGFT
+#if HAVE_GD_FREETYPE
 	int brect[8], pen_x;
 	double ptsize;
 	const char *err;
@@ -419,7 +419,7 @@ void imagestringup(IMAGECONTENT *ic, const fontrole_t role, const int x, const i
 		return;
 	}
 
-#if HAVE_DECL_GDIMAGESTRINGFT
+#if HAVE_GD_FREETYPE
 	/* at angle pi/2 (90 degrees) glyphs extend left of the pen by roughly ascent; shift so
 	 * the visual left edge matches gdImageStringUp's x anchor */
 	ptsize = imageroleptsize(ic, role);
@@ -490,7 +490,7 @@ int imagetextwidth(const IMAGECONTENT *ic, const fontrole_t role, const char *te
 		return ((int)strlen(text)) * imagerolefont(ic, role)->w;
 	}
 
-#if HAVE_DECL_GDIMAGESTRINGFT
+#if HAVE_GD_FREETYPE
 	return imagettftextwidth(ic, imageroleptsize(ic, role), text);
 #else
 	return 0;
@@ -546,7 +546,7 @@ int imagecentery(IMAGECONTENT *ic, const fontrole_t role, const char *text, cons
 {
 	int text_h, y;
 
-#if HAVE_DECL_GDIMAGESTRINGFT
+#if HAVE_GD_FREETYPE
 	if (ic->fontctx.mode == FONT_TTF && !imageroleusesbuiltin(ic, role)) {
 		int brect[8], ink_h, ink_top, ink_bot, ascent;
 		const char *err;

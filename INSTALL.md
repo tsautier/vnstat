@@ -32,6 +32,8 @@ found to be available and `--disable-image-output` isn't given as parameter
 for `./configure`. Image text uses libGD built-in bitmap fonts by default.
 Optional TrueType fonts (`FontFile` / `FontSize` in the configuration, or
 `vnstati --font`) require a FreeType enabled libgd and a readable `.ttf` file.
+`./configure` enables that support only when libgd actually provides it.
+Pass `--disable-freetype` to leave it out even when FreeType is available.
 
 An example cgi (`vnstat.cgi`) to be used with a http server with the image
 output support has been provided in the `examples` directory. Configuration

@@ -17,6 +17,9 @@ AC_PROG_MKDIR_P
 AC_ARG_ENABLE([image-output], [
 AS_HELP_STRING([--disable-image-output], [disable PNG image output])])
 
+AC_ARG_ENABLE([freetype], [
+AS_HELP_STRING([--disable-freetype], [disable TrueType font support in image output])])
+
 CFLAG_EXTRAS=""
 AC_ARG_ENABLE([werror], [
 AS_HELP_STRING([--enable-werror], [add -Werror to CFLAGS])], [CFLAG_EXTRAS="-Werror"])
@@ -30,10 +33,27 @@ CFLAGS="$CFLAGS -I/usr/local/include" LDFLAGS="$LDFLAGS -L/usr/local/lib"])
 AC_CHECK_LIB([m], [pow], [], [AC_MSG_ERROR([could not find required math library])])
 AC_CHECK_LIB([sqlite3], [sqlite3_prepare_v2], [], [AC_MSG_ERROR([could not find required sqlite3 library])])
 
+# gdImageStringFT is declared unconditionally and libGD provides a stub for
+# it when built without FreeType. gdFontCacheSetup is compiled only when
+# FreeType support is enabled.
+have_gd_freetype=no
 AS_IF([test "x$enable_image_output" != "xno"], [
 AC_CHECK_LIB([gd], [gdImagePng], [IMAGELIBS=-lgd])
-AC_CHECK_DECLS([GD_NEAREST_NEIGHBOUR, gdImageFile, gdImageStringFT], [], [], [[#include <gd.h>]])
+AC_CHECK_DECLS([GD_NEAREST_NEIGHBOUR, gdImageFile], [], [], [[#include <gd.h>]])
+AS_IF([test "$IMAGELIBS" = "-lgd" && test "x$enable_freetype" != "xno"], [
+	saved_LIBS=$LIBS
+	LIBS="$LIBS $IMAGELIBS"
+	AC_MSG_CHECKING([for FreeType support in libgd])
+	AC_LINK_IFELSE(
+		[AC_LANG_PROGRAM([[#include <gd.h>]], [[return gdFontCacheSetup();]])],
+		[have_gd_freetype=yes],
+		[have_gd_freetype=no])
+	AC_MSG_RESULT([$have_gd_freetype])
+	LIBS=$saved_LIBS
+])
 AC_SUBST([IMAGELIBS])])
+AS_IF([test "x$have_gd_freetype" = "xyes"], [gd_freetype_define=1], [gd_freetype_define=0])
+AC_DEFINE_UNQUOTED([HAVE_GD_FREETYPE], [$gd_freetype_define], [Define to 1 if libgd provides FreeType font support, otherwise 0.])
 
 AM_CONDITIONAL([HAVE_LIBGD], [test "$IMAGELIBS" = "-lgd"])
 PKG_CHECK_MODULES([CHECK], [check >= 0.9.6], [], [AC_MSG_NOTICE([testcases can not be execute without check installed])])
@@ -116,11 +136,14 @@ AC_MSG_NOTICE([   vnstatd: $msg_sbindir/vnstatd ])
 AC_MSG_NOTICE([    config: $msg_sysconfdir/vnstat.conf ])
 AC_MSG_NOTICE()
 AM_COND_IF([HAVE_CHECK], [
-AC_MSG_NOTICE([          Tests: available ])], [
-AC_MSG_NOTICE([          Tests: unavailable ])])
+AC_MSG_NOTICE([            Tests: available ])], [
+AC_MSG_NOTICE([            Tests: unavailable ])])
 AM_COND_IF([HAVE_LIBGD], [
-AC_MSG_NOTICE([   Image output: enabled ])], [
-AC_MSG_NOTICE([   Image output: disabled ])])
+AC_MSG_NOTICE([     Image output: enabled ])
+AS_IF([test "x$have_gd_freetype" = "xyes"], [
+AC_MSG_NOTICE([         FreeType: enabled ])], [
+AC_MSG_NOTICE([         FreeType: disabled ])])], [
+AC_MSG_NOTICE([     Image output: disabled ])])
 AC_MSG_NOTICE()
 AC_MSG_NOTICE([ ============================================== ])
 AC_MSG_NOTICE()

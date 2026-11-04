@@ -1,6 +1,11 @@
 2.15 / <not released yet>
 
- - No changes yet
+ - Fixed
+   - Image output failed to build when available libGD had been built without
+     FreeType support
+ - New
+   - Add --disable-freetype to configure to allow building image output without
+     TrueType font support even if available libGD includes FreeType support
 
 
 2.14 / 31-Oct-2026

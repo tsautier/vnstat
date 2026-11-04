@@ -39,7 +39,11 @@ int main(int argc, char *argv[])
 		for (currentarg = 1; currentarg < argc; currentarg++) {
 			if ((strcmp(argv[currentarg], "-D") == 0) || (strcmp(argv[currentarg], "--debug") == 0)) {
 				if (!debug) {
-					printf("Debug enabled, vnstati %s, SQLite %s, LibGD %d.%d.%d\n", VERSION, sqlite3_libversion(), GD_MAJOR_VERSION, GD_MINOR_VERSION, GD_RELEASE_VERSION);
+					printf("Debug enabled, vnstati %s, SQLite %s, LibGD %d.%d.%d", VERSION, sqlite3_libversion(), GD_MAJOR_VERSION, GD_MINOR_VERSION, GD_RELEASE_VERSION);
+#if HAVE_GD_FREETYPE
+					printf(" with FreeType");
+#endif
+					printf("\n");
 				}
 				if (debug < 2) {
 					debug += 1;
@@ -669,7 +673,11 @@ void parseargs(IPARAMS *p, IMAGECONTENT *ic, int argc, char **argv)
 			showdbiflist(cfg.qmode);
 			exit(EXIT_SUCCESS);
 		} else if ((strcmp(argv[currentarg], "-v") == 0) || (strcmp(argv[currentarg], "--version")) == 0) {
+#if HAVE_GD_FREETYPE
+			printf("vnStat image output %s by Teemu Toivola <tst at iki dot fi> (SQLite %s, LibGD %d.%d.%d with FreeType)\n", getversion(), sqlite3_libversion(), GD_MAJOR_VERSION, GD_MINOR_VERSION, GD_RELEASE_VERSION);
+#else
 			printf("vnStat image output %s by Teemu Toivola <tst at iki dot fi> (SQLite %s, LibGD %d.%d.%d)\n", getversion(), sqlite3_libversion(), GD_MAJOR_VERSION, GD_MINOR_VERSION, GD_RELEASE_VERSION);
+#endif
 			exit(EXIT_SUCCESS);
 		} else {
 			if (argv[currentarg][0] == '-') {

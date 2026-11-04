@@ -762,6 +762,7 @@ enable_silent_rules
 enable_maintainer_mode
 enable_dependency_tracking
 enable_image_output
+enable_freetype
 enable_werror
 enable_extra_paths
 '
@@ -1416,6 +1417,8 @@ Optional Features:
                           speeds up one-time build
 
   --disable-image-output  disable PNG image output
+
+  --disable-freetype      disable TrueType font support in image output
 
   --enable-werror         add -Werror to CFLAGS
 
@@ -4927,6 +4930,13 @@ then :
 fi
 
 
+# Check whether --enable-freetype was given.
+if test ${enable_freetype+y}
+then :
+  enableval=$enable_freetype;
+fi
+
+
 CFLAG_EXTRAS=""
 # Check whether --enable-werror was given.
 if test ${enable_werror+y}
@@ -5058,6 +5068,10 @@ esac
 fi
 
 
+# gdImageStringFT is declared unconditionally and libgd still provides a stub
+# for it when built without FreeType. gdFontCacheSetup is compiled only when
+# FreeType support is enabled.
+have_gd_freetype=no
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $CC options needed to detect all undeclared functions" >&5
 printf %s "checking for $CC options needed to detect all undeclared functions... " >&6; }
 if test ${ac_cv_c_undeclared_builtin_options+y}
@@ -5212,19 +5226,51 @@ else case e in #(
 esac
 fi
 printf "%s\n" "#define HAVE_DECL_GDIMAGEFILE $ac_have_decl" >>confdefs.h
-ac_fn_check_decl "$LINENO" "gdImageStringFT" "ac_cv_have_decl_gdImageStringFT" "#include <gd.h>
-" "$ac_c_undeclared_builtin_options" "CFLAGS"
-if test "x$ac_cv_have_decl_gdImageStringFT" = xyes
+
+if test "$IMAGELIBS" = "-lgd" && test "x$enable_freetype" != "xno"
 then :
-  ac_have_decl=1
+
+	saved_LIBS=$LIBS
+	LIBS="$LIBS $IMAGELIBS"
+	{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for FreeType support in libgd" >&5
+printf %s "checking for FreeType support in libgd... " >&6; }
+	cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <gd.h>
+int
+main (void)
+{
+return gdFontCacheSetup();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"
+then :
+  have_gd_freetype=yes
 else case e in #(
-  e) ac_have_decl=0 ;;
+  e) have_gd_freetype=no ;;
 esac
 fi
-printf "%s\n" "#define HAVE_DECL_GDIMAGESTRINGFT $ac_have_decl" >>confdefs.h
-
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+	{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $have_gd_freetype" >&5
+printf "%s\n" "$have_gd_freetype" >&6; }
+	LIBS=$saved_LIBS
 
 fi
+
+fi
+if test "x$have_gd_freetype" = "xyes"
+then :
+  gd_freetype_define=1
+else case e in #(
+  e) gd_freetype_define=0 ;;
+esac
+fi
+
+printf "%s\n" "#define HAVE_GD_FREETYPE $gd_freetype_define" >>confdefs.h
+
 
  if test "$IMAGELIBS" = "-lgd"; then
   HAVE_LIBGD_TRUE=
@@ -8023,21 +8069,32 @@ printf "%s\n" "$as_me:     config: $msg_sysconfdir/vnstat.conf " >&6;}
 printf "%s\n" "$as_me: " >&6;}
 if test -z "$HAVE_CHECK_TRUE"; then :
 
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}:           Tests: available " >&5
-printf "%s\n" "$as_me:           Tests: available " >&6;}
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}:             Tests: available " >&5
+printf "%s\n" "$as_me:             Tests: available " >&6;}
 else
 
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}:           Tests: unavailable " >&5
-printf "%s\n" "$as_me:           Tests: unavailable " >&6;}
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}:             Tests: unavailable " >&5
+printf "%s\n" "$as_me:             Tests: unavailable " >&6;}
 fi
 if test -z "$HAVE_LIBGD_TRUE"; then :
 
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}:    Image output: enabled " >&5
-printf "%s\n" "$as_me:    Image output: enabled " >&6;}
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}:      Image output: enabled " >&5
+printf "%s\n" "$as_me:      Image output: enabled " >&6;}
+if test "x$have_gd_freetype" = "xyes"
+then :
+
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}:          FreeType: enabled " >&5
+printf "%s\n" "$as_me:          FreeType: enabled " >&6;}
+else case e in #(
+  e)
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}:          FreeType: disabled " >&5
+printf "%s\n" "$as_me:          FreeType: disabled " >&6;} ;;
+esac
+fi
 else
 
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}:    Image output: disabled " >&5
-printf "%s\n" "$as_me:    Image output: disabled " >&6;}
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}:      Image output: disabled " >&5
+printf "%s\n" "$as_me:      Image output: disabled " >&6;}
 fi
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: " >&5
 printf "%s\n" "$as_me: " >&6;}

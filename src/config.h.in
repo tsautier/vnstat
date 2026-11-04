@@ -10,10 +10,6 @@
    don't. */
 #undef HAVE_DECL_GDIMAGEFILE
 
-/* Define to 1 if you have the declaration of 'gdImageStringFT', and to 0 if
-   you don't. */
-#undef HAVE_DECL_GDIMAGESTRINGFT
-
 /* Define to 1 if you have the declaration of 'GD_NEAREST_NEIGHBOUR', and to 0
    if you don't. */
 #undef HAVE_DECL_GD_NEAREST_NEIGHBOUR
@@ -42,6 +38,9 @@
 
 /* Define to 1 if you have the 'fork' function. */
 #undef HAVE_FORK
+
+/* Define to 1 if libgd provides FreeType font support, otherwise 0. */
+#undef HAVE_GD_FREETYPE
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
